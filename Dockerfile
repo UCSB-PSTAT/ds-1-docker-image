@@ -1,4 +1,5 @@
-FROM ucsb/base-scipy:v20200921.1
+#FROM ucsb/base-scipy:v20200921.1
+FROM dddlab/python-notebook:v20200331-df7ed42-94fdd01b492f
 
 LABEL maintainer="Patrick Windmiller <sysadmin@pstat.ucsb.edu>"
 
