@@ -1,4 +1,3 @@
-#FROM ucsb/base-scipy:v20200921.1
 FROM dddlab/python-notebook:v20200331-df7ed42-94fdd01b492f
 
 LABEL maintainer="Patrick Windmiller <sysadmin@pstat.ucsb.edu>"
@@ -10,7 +9,8 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-RUN pip install vdiff
+RUN conda update python && \
+    pip install vdiff
 
 RUN \
     # Notebook extensions (TOC extension)
@@ -31,7 +31,36 @@ RUN \
     # jupyter lab extensions
     jupyter labextension install @jupyterlab/google-drive && \
     jupyter labextension install @jupyterlab/toc --clean && \
+    jupyter lab build && \
     pip install datascience && \
     \
     # remove cache
     rm -rf ~/.cache/pip ~/.cache/matplotlib ~/.cache/yarn
+
+#--- Install nbgitpuller
+RUN pip install nbgitpuller && \
+    jupyter serverextension enable --py nbgitpuller --sys-prefix
+
+RUN conda install -c conda-forge nodejs && \
+    conda install -c conda-forge spacy && \
+    conda install -c conda-forge ipympl  && \
+    conda install --quiet -y nltk && \
+    conda install --quiet -y mplcursors && \
+    conda install --quiet -y pytest && \
+    conda install --quiet -y tweepy && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN jupyter labextension install @jupyterlab/debugger && \
+    jupyter labextension install jupyter-matplotlib@0.7.3 && \
+    jupyter labextension update jupyterlab_bokeh && \
+    jupyter lab build
+
+RUN fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN pip install PTable && \
+    pip install pytest-custom-report
+
+RUN fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
