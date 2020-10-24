@@ -62,5 +62,9 @@ RUN fix-permissions $CONDA_DIR && \
 RUN pip install PTable && \
     pip install pytest-custom-report
 
+# Install otter-grader
+RUN pip install otter-grader
+
 RUN fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+
