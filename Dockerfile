@@ -26,7 +26,11 @@ RUN \
     jupyter serverextension enable jupyter_nbextensions_configurator --sys-prefix && \
     \
     # update JupyterLab (required for @jupyterlab/toc)
-    conda update -c conda-forge jupyterlab && \
+    conda install -c conda-forge jupyterlab && \
+    \
+    # add support for Matplotlib Magics
+    conda install -c conda-forge ipympl==0.5.3 && \
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib@0.7.2 && \
     \
     # jupyter lab extensions
     jupyter labextension install @jupyterlab/google-drive && \
@@ -35,7 +39,8 @@ RUN \
     pip install datascience && \
     \
     # remove cache
-    rm -rf ~/.cache/pip ~/.cache/matplotlib ~/.cache/yarn
+    rm -rf ~/.cache/pip ~/.cache/matplotlib ~/.cache/yarn && \
+    rm -rf /opt/conda/share/jupyter/lab/extensions/jupyter-matplotlib-0.7.1.tgz
 
 #--- Install nbgitpuller
 RUN pip install nbgitpuller && \
@@ -43,21 +48,10 @@ RUN pip install nbgitpuller && \
 
 RUN conda install -c conda-forge nodejs && \
     conda install -c conda-forge spacy && \
-    conda install -c conda-forge ipympl  && \
     conda install --quiet -y nltk && \
     conda install --quiet -y mplcursors && \
     conda install --quiet -y pytest && \
-    conda install --quiet -y tweepy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN jupyter labextension install @jupyterlab/debugger && \
-    jupyter labextension install jupyter-matplotlib@0.7.3 && \
-    jupyter labextension update jupyterlab_bokeh && \
-    jupyter lab build
-
-RUN fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    conda install --quiet -y tweepy
 
 RUN pip install PTable && \
     pip install pytest-custom-report
@@ -65,6 +59,7 @@ RUN pip install PTable && \
 # Install otter-grader
 RUN pip install otter-grader
 
-RUN fix-permissions $CONDA_DIR && \
+RUN jupyter lab build && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
